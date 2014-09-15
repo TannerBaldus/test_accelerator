@@ -1,6 +1,6 @@
 from parse_tools import print_test_names
-from argparse import  ArgumentParser
-from settings import  INSTALLED_FRAMEWORKS
+from argparse import ArgumentParser
+from settings import get_nodes, get_strip
 import os
 
 parser = ArgumentParser()
@@ -23,30 +23,13 @@ parser.add_argument("--agent", "-a", action="store", required=True, dest="agents
 
 
 
-def get_framework(arguments):
-    framework = INSTALLED_FRAMEWORKS.get(arguments.framework)
-    if not framework:
-        raise Exception('{} not in  INSTALLED_FRAMEWORKS check settings.py'.format(framework))
-    return framework
-
-
-def get_nodes(arguments):
-    framework = get_framework(arguments)
-    nodes = framework.get('nodes')
-    if not nodes:
-        raise Exception("Nodes not defined in settings for {}".format(framework))
-    return nodes
-
-
-def get_strip(arguments):
-    framework = get_framework(arguments)
-    strip = framework.get('strip')
-    if not framework:
-        raise Exception('Strip variable not set in {}'.format(framework))
-    return strip
-
 
 def testfile_parse(arguments):
+    """
+    Using the argparse arguments calls print_test_names
+    :param arguments: argparse arguments
+    :return: None
+    """
     nodes = get_nodes(arguments)
     strip = get_strip(arguments)
     print_test_names(arguments.agents, arguments.files, arguments.recursive, arguments.pattern, nodes, strip)

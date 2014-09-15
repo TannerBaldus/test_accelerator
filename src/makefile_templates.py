@@ -1,6 +1,11 @@
-__author__ = 'tanner'
+__author__ = 'Tanner Baldus'
+"""
+File for storing makefile templates. To use in settings simply add the line:
+from makefile_templates import template_name
+to settings.py
+"""
 
-GNUMAKE_TEMPLATE = """
+gnumake_template = """
 # TESTRUNNER:       the path to the testrunner
 # LIST_SUITES:      how to list available test suites.
 # RUN_ONE_SUITE:    how to run a single suite, should use the special

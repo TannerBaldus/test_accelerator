@@ -5,6 +5,14 @@ import re
 
 
 def full_filenames(root, file_lst):
+    """
+    Creates a list of full file paths from
+    the output of os.listdir
+
+    :param root: the root of the files
+    :param file_lst: list of file names
+    :return: a list of the root joined to all the files
+    """
     return [os.path.join(root, fn) for fn in file_lst]
 
 
@@ -31,6 +39,15 @@ def list_directory_files(directory, recursive, glob_pattern):
 
 
 def get_node_match(node, line_number, lines, strip):
+    """
+    Using a node checks if the line is a match.
+
+    :param node: dict with lambda functions to test for a match
+    :param line_number: the line number in the file
+    :param lines: all the lines in the file from file.readlines()
+    :param strip: bool whether to strip the line text
+    :return: the match string, None if there is no match
+    """
     do_strip = lambda text, flag: text.strip() if flag else text
     line = do_strip(lines[line_number], strip)
     initial_match = node['initial'](line)
@@ -43,11 +60,12 @@ def get_node_match(node, line_number, lines, strip):
     return initial_match
 
 
-
 def node_search(search_files, node_lst, strip=True):
+
     """
-    Iterates through each file looking for matches
-    defined in a framework's node list.
+    Generates full names of tests by iterating through
+    files by finding matches with nodes. When it finds a match for the
+    deepest node (leaf) it yields the match string and starts from the root.
 
     :param search_files:
     :param node_lst:
@@ -63,7 +81,7 @@ def node_search(search_files, node_lst, strip=True):
         cur_depth = 0
         with open(fn) as search_file:
             lines = search_file.readlines()
-            for line_number,line in enumerate(lines):
+            for line_number, line in enumerate(lines):
 
                 cur_node = node_lst[cur_depth]
                 line = line.strip()
@@ -76,6 +94,7 @@ def node_search(search_files, node_lst, strip=True):
                 else:
                     match = None
                     for index in range(cur_depth):
+                        # Check if the current line is a match of a earlier node.
                         match = get_node_match(node_lst[index], line_number, lines, strip)
 
                         if match:
@@ -100,6 +119,20 @@ def node_search(search_files, node_lst, strip=True):
 
 
 def print_test_names(agents, file_str, recursive, glob_pattern, node_list, strip, delimiter=','):
+    """
+    Since the best parallelization we can do is the number of jobs == number of agents;
+    We print out the test in as many delimited chunks as there are agents.
+    e.g. for 8 agents we print out 8 delimited strings
+
+    :param agents: number of agents generating test names for
+    :param file_str: comma separated string of directories and/or files
+    :param recursive: bool whether to recursively search directories
+    :param glob_pattern: pattern to match files
+    :param node_list: list of node dicts
+    :param strip: bool whether to strip the lines in files
+    :param delimiter: the delimiter for the chunks
+    :return: None
+    """
     input_fn = file_str.split(',')
     file_names = []
     for fn in input_fn:
