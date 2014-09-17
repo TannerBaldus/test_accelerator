@@ -1,10 +1,12 @@
 __author__ = 'root'
 
 from setuptools import setup
+
 setup(
-    name='Emake Test Converter',
+    name='Test_Accelerator',
     version='0.1',
     author='Tanner Baldus',
+    url='https://github.com/TannerBaldus/test_accelerator',
     author_email='tbaldus@electric-cloud.com',
     packages=['src'],
     scripts=[],
