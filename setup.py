@@ -4,7 +4,7 @@ from setuptools import setup
 
 setup(
     name='Test_Accelerator',
-    version='0.1',
+    version='0.1.1',
     author='Tanner Baldus',
     url='https://github.com/TannerBaldus/test_accelerator',
     author_email='tbaldus@electric-cloud.com',

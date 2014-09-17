@@ -1,24 +1,24 @@
 from parse_tools import print_test_names
 from argparse import ArgumentParser
-from settings import get_nodes, get_strip
+from settings import get_component
 import os
 
-parser = ArgumentParser()
+argparser = ArgumentParser()
 
-parser.add_argument("--framework", dest="framework", required=True,
+argparser.add_argument("--framework", dest="framework", required=True,
                     help="Which framework to parse.")
 
 
-parser.add_argument("--files", "-f", action="store", dest="files", default=os.getcwd(),
+argparser.add_argument("--files", "-f", action="store", dest="files", default=os.getcwd(),
                     help="A directory or comma separated list of files to search")
 
-parser.add_argument("--pattern", "-p", action="store", dest="pattern",
+argparser.add_argument("--pattern", "-p", action="store", dest="pattern",
                     help="glob pattern for files to search", default='*')
 
-parser.add_argument("--recursive", "-r", action="store_true", dest="recursive",
+argparser.add_argument("--recursive", "-r", action="store_true", dest="recursive",
                         help="Whether to recursively search directory", default=False)
 
-parser.add_argument("--agent", "-a", action="store", required=True, dest="agents", type=int,
+argparser.add_argument("--agent", "-a", action="store", required=True, dest="agents", type=int,
                     help="How many agents are you using")
 
 
@@ -30,13 +30,14 @@ def testfile_parse(arguments):
     :param arguments: argparse arguments
     :return: None
     """
-    nodes = get_nodes(arguments)
-    strip = get_strip(arguments)
+    framework = arguments.framework
+    nodes = get_component(framework, 'nodes')
+    strip = get_component(framework,'strip')
     print_test_names(arguments.agents, arguments.files, arguments.recursive, arguments.pattern, nodes, strip)
 
 
 def main():
-    arguments = parser.parse_args()
+    arguments = argparser.parse_args()
     testfile_parse(arguments)
 
 if __name__ == '__main__':

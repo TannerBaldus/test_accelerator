@@ -5,15 +5,14 @@ from  settings import  get_framework, get_component
 import argparse
 import os.path
 
-parser = argparse.ArgumentParser()
+argparser = argparse.ArgumentParser()
 def check_negative(value):
     ivalue = int(value)
     if ivalue < 0:
          raise argparse.ArgumentTypeError("%s is an invalid positive int value" % value)
     return ivalue
 
-required = parser.add_argument_group("Required args")
-optional = parser.add_argument_group("Optional args")
+required = argparser.add_argument_group("required arguments")
 
 required.add_argument("--framework", dest="framework", required=True,
                     help="Which framework to parse.")
@@ -28,18 +27,18 @@ required.add_argument("--test_target", "-t", action="store", dest="test_target",
                      help='The compiled test file. e.g. tests.dll')
 
 
-optional.add_argument("--pattern", "-p", action="store", dest="pattern",
-                    help="glob pattern for files to search", default='*')
+argparser.add_argument("--pattern", "-p", action="store", dest="pattern",
+                    help="glob pattern for files to search default=*", default='*')
 
-optional.add_argument("--recursive", "-r", action="store_true", dest="recursive",
-                        help="Whether to recursively search directory", default=False)
+argparser.add_argument("--recursive", "-r", action="store_true", dest="recursive",
+                        help="Whether to recursively search directory default=False", default=False)
 
 
-optional.add_argument("--makefile" "-m", action="store", dest="makefile_path",
-                  help="Path to write makefile to", default=os.path.join(os.getcwd(), 'Makefile'))
+argparser.add_argument("--makefile" "-m", action="store", dest="makefile_path",
+                  help="Path to write makefile to default=Makefile", default=os.path.join(os.getcwd(), 'Makefile'))
 
-optional.add_argument("--agent", "-a", action="store", required=True, dest="agents", type=check_negative,
-                    default=1, help="How many agents are you using")
+argparser.add_argument("--agent", "-a", action="store", required=True, dest="agents", type=check_negative,
+                    default=1, help="How many agents are you using default=1")
 
 
 
@@ -88,7 +87,7 @@ def makefile_generator(arguments):
 
 
 def main():
-    arguments = parser.parse_args()
+    arguments = argparser.parse_args()
     print arguments
     makefile_string = makefile_generator(arguments)
     with open(arguments.makefile_path, 'w') as makefile:
