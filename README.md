@@ -2,9 +2,7 @@
 
 
 ##Intro
-Test Acclerator is a tool for use with [ElectricAccelerator](http://electric-cloud.com/products/electricaccelerator/) to accelerate unittests tests. 
-How this works is test acclerator parses the unittest source files to deduce the full names
-of tests an
+PROJECT takes unittest source code and generates a Makefile that can be then fed to [ElectricAccelerator](http://electric-cloud.com/products/electricaccelerator/). The Makefile parses the to deduce the full unittest names and then loops though the unittest names and calls  the command to run those tests on those test names. This creates jobs that ElectricAccelerator can then parallelize.
 
 ##Installation
 **Requires >=Python 2.7** 
