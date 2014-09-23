@@ -49,16 +49,16 @@ INSTALLED_FRAMEWORKS = {'NUnit': NUnit}
 class SettingsError(Exception):
     pass
 
-def get_framework(framework):
+def get_framework(in_framework):
     """
     Handles getting the framework from the INSTALLED_FRAMEWORKS. Raises Exception if
     the framework is missing
     :param arguments: argparse arguments
     :return: framework dict
     """
-    framework = INSTALLED_FRAMEWORKS.get(framework)
+    framework = INSTALLED_FRAMEWORKS.get(in_framework)
     if not framework:
-        raise SettingsError('{} not in  INSTALLED_FRAMEWORKS check settings.py'.format(framework))
+        raise SettingsError('{} not in  INSTALLED_FRAMEWORKS check settings.py'.format(in_framework))
     return framework
 
 
@@ -72,7 +72,7 @@ def get_component(framework, in_component):
     framework = get_framework(framework)
     component = framework.get(in_component)
     if not component:
-        raise SettingsError("{} not defined in settings for {}".format(component, framework))
+        raise SettingsError("{} not defined in settings for {}".format(in_component, framework))
     return component
 
 
