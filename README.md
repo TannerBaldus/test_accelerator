@@ -111,7 +111,15 @@ def c_class(text):
     return None
 
 
-replace = lambda text, substitute: substitute if substitute != text else None
+def replace(regex, replacement,text):
+    """
+    Takes a piece of text and 
+    """
+    substitute = re.sub(regex, replacement, text)
+    if substitute != text:
+        return substitute
+    return None
+
 
 ```
 
@@ -170,8 +178,7 @@ To install the a new framework assign the dictonary to a variable then add a nam
 ```python
 NUnit = {
     'nodes': [
-        {'depth': 0, 'initial': lambda text: replace(text, 
-        re.sub(r'namespace(. ?)', '', text))},
+        {'depth': 0, 'initial': lambda text: replace(r'namespace(. ?)', '',text)},
         {'depth': 1, 'initial': lambda text: re.search('\[TestFixture.*\]', text),
          'after': lambda text: c_class(text)}
     ],
@@ -179,7 +186,6 @@ NUnit = {
     'strip': True,
     'makefile': gnumake_template,
 }
-
 INSTALLED_FRAMEWORKS = {"NUnit":NUnit}
 
 ```
