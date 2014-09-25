@@ -17,7 +17,7 @@ required = argparser.add_argument_group("required arguments")
 required.add_argument("--framework", dest="framework", required=True,
                     help="Which framework to parse.")
 
-required.add_argument("--testrunner", dest="test_runner", required=True,
+required.add_argument("--testrunner", dest="test_runner",
                     help="Path to the testrunner")
 
 required.add_argument("--files", "-f", action="store", dest="files", required=True,

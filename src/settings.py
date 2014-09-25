@@ -1,6 +1,5 @@
 import re
-from makefile_templates import gnumake_template
-
+import makefile_templates as makefiles
 ##################################################
 # Helper Functions for Building Framework Parsers
 ##################################################
@@ -23,6 +22,11 @@ def replace(regex, replacement,text):
         return substitute
     return None
 
+def boost_test_case(text):
+    if re.search('BOOST_AUTO_TEST_CASE'):
+        return text[text.find("(")+1:text.find(")")].strip()
+    return  None
+
 ##################################################
 # Framework Parser Definitions
 ##################################################
@@ -34,7 +38,17 @@ NUnit = {
     ],
     'command': '/run={suite} /nologo {test_file}',
     'strip': True,
-    'makefile': gnumake_template,
+    'makefile': makefiles.gnu,
+}
+
+Boost = {
+    'nodes':[
+        {'depth': 0,  'initial': lambda text: boost_test_case(text)}
+    ],
+    'command': ('{test_file} --run-test={test} --log_format=XML --log_level=all --report_level=no'
+                '--log_sink={test_file}_{suite}.x64d.xml'),
+    'makefile': makefiles.boost,
+    'strip': True,
 }
 
 
@@ -44,7 +58,7 @@ NUnit = {
 #####################################################
 # Add Framework Name: Framework Definition Pairs Here
 #####################################################
-INSTALLED_FRAMEWORKS = {'NUnit': NUnit}
+INSTALLED_FRAMEWORKS = {'NUnit': NUnit, 'Boost': Boost}
 
 
 #####################################################
