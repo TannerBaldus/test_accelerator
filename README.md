@@ -26,15 +26,17 @@ required arguments:
 ```
   --framework FRAMEWORK				
   		Name of Framework to Parse
-  --testrunner TEST_RUNNER			 
+  --testrunner TEST_RUNNER
   				Path to the testrunner
   --files FILES, -f FILES			  
   				A comma separated list of files and/or directories to parse unittests
-  --test_target TEST_TARGET, -t TEST_TARGET  	
-  				The compiled test file. ex. tests.dll
+
 ```
 These optional arguments can also be used
 ```
+  --test_target TEST_TARGET, -t TEST_TARGET
+  				The compiled test file. ex. tests.dll
+
  --pattern PATTERN, -p PATTERN
  			glob pattern for files to search
              default = '*'

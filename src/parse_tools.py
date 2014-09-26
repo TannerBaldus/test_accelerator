@@ -4,38 +4,7 @@ import os
 import re
 
 
-def full_filenames(root, file_lst):
-    """
-    Creates a list of full file paths from
-    the output of os.listdir
 
-    :param root: the root of the files
-    :param file_lst: list of file names
-    :return: a list of the root joined to all the files
-    """
-    return [os.path.join(root, fn) for fn in file_lst]
-
-
-def list_directory_files(directory, recursive, glob_pattern):
-    """
-    Lists the all of the file names in a directory
-
-    :param directory: directory to search
-    :param recursive: whether to recursively search directory
-    :param glob_pattern: pattern to match files to. defaults to all files
-    :return: a list of full path file names
-    """
-    if recursive:
-        all_files = []
-        for root, dirs, files in os.walk(directory):
-            all_files += full_filenames(root, files)
-
-    else:
-        full_names = full_filenames(directory, os.listdir(directory))
-        all_files = [fn for fn in full_names if os.path.isfile(fn)]
-
-    relevant_files = filter(lambda filename: fnmatch(filename, glob_pattern), all_files)
-    return relevant_files
 
 
 def get_node_match(node, line_number, lines, strip):
@@ -60,7 +29,7 @@ def get_node_match(node, line_number, lines, strip):
     return initial_match
 
 
-def node_search(search_files, node_lst, strip=True):
+def node_search(search_files, node_lst, fullname_template, strip=True):
 
     """
     Generates full names of tests by iterating through
@@ -72,20 +41,17 @@ def node_search(search_files, node_lst, strip=True):
     :param strip:
     :return:
     """
-
     max_depth = len(node_lst)-1
     node_lst.sort(key=lambda node: node['depth'])
-    running_name = '{}'
+    running_names = []
+    add_name = lambda depth, name: running_names.insert(depth, name)
 
     for fn in search_files:
         cur_depth = 0
         with open(fn) as search_file:
             lines = search_file.readlines()
-            for line_number, line in enumerate(lines):
-
+            for line_number in range(len(lines)):
                 cur_node = node_lst[cur_depth]
-                line = line.strip()
-
                 node_match = get_node_match(cur_node, line_number, lines, strip)
 
                 if node_match:
@@ -106,23 +72,20 @@ def node_search(search_files, node_lst, strip=True):
                         continue
 
                 if cur_depth == max_depth:
-                    yield '{}.{}'.format(running_name, cur_name)
+                    fullname = running_names+[cur_name]
+                    yield fullname_template.format(*fullname)
 
                 else:
-                    if cur_depth == 0:
-                        running_name = node_match
-                    else:
-                        running_name = '{}.{}'.format(running_name, cur_name)
-
+                    add_name(cur_depth, cur_name)
                     cur_depth = (cur_depth+1) % len(node_lst)
 
 
-
-def print_test_names(agents, file_str, recursive, glob_pattern, node_list, strip, delimiter=','):
+def print_test_names(files, node_list, full_name_template, strip, agents=0, delimiter=','):
     """
     Since the best parallelization we can do is the number of jobs == number of agents;
     We print out the test in as many delimited chunks as there are agents.
-    e.g. for 8 agents we print out 8 delimited strings
+    e.g. for 8 agents we print out 8 delimited strings if agents are enabled.
+    Otherwise we just print out each test name individually.
 
     :param agents: number of agents generating test names for
     :param file_str: comma separated string of directories and/or files
@@ -133,22 +96,17 @@ def print_test_names(agents, file_str, recursive, glob_pattern, node_list, strip
     :param delimiter: the delimiter for the chunks
     :return: None
     """
-    input_fn = file_str.split(',')
-    file_names = []
-    for fn in input_fn:
-        if os.path.isdir(fn):
-            file_names += list_directory_files(file_str, recursive, glob_pattern)
-        else:
-            file_names += fn
-
-    names = [name for name in node_search(file_names, node_list, strip)]
+    names = [name for name in node_search(files, node_list, full_name_template, strip)]
     length = len(names)
-    chunk_len = length/agents
-
-    for i in range(1, agents+1):
-        next = i*chunk_len
-        if i == agents:
-            next = max(length, next)
-        print delimiter.join(names[i-1:next])
+    if agents and agents <= length:
+        chunk_len = length/agents
+        for i in range(1, agents+1):
+            next = i*chunk_len
+            if i == agents:
+                next = max(length, next)
+            print(delimiter.join(names[i-1:next]))
+    else:
+        for name in names:
+            print(name)
 
 
